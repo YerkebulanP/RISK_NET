@@ -100,22 +100,3 @@ async def delete_users(id: int):
 
     return conn.execute(select(Users).where(Users.id == id)).first()
 
-
-
-# # Change password
-# @user_routers.post("/change-password")
-# async def change_password(oldPassword: str, newPassword: str):
-#     # Здесь добавьте код для проверки старого пароля и обновления нового пароля в базе данных PostgreSQL
-#     # Например, вы можете использовать SQLAlchemy для взаимодействия с базой данных
-#     # Примерно так:
-#     # user = get_user_from_database() # Функция, которая получает пользователя из базы данных
-#     # if verify_password(oldPassword, user.password): # Функция, которая проверяет соответствие пароля
-#     #     user.password = hash_password(newPassword) # Функция, которая хэширует новый пароль
-#     #     update_user_in_database(user) # Функция, которая обновляет пользователя в базе данных
-#     #     return {"message": "Password updated successfully"}
-#     # else:
-#     #     return {"message": "Incorrect old password"}
-
-#     # Здесь нужно подставить соответствующий код для вашей базы данных и логики обновления пароля
-#     return {"message": "Password updated successfully"}
-    

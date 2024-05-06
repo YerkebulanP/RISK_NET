@@ -245,14 +245,6 @@ async def fetch_risk_2_description_by_level_1_id(level_1_id: str, db: Session = 
     
     return descriptions
 
- # FOR EVENTS
-# @reestr_routers.get("/reestr/description_2", response_model=list, tags=['reestr'])
-# async def fetch_all_risk_2_descriptions(db: Session = Depends(get_db)):
-
-#     risk_factor_2_descriptions = db.query(RiskFactor2).all()
-#     descriptions = [{"level_2_id": item.level_2_id, "description_2": item.description_2} for item in risk_factor_2_descriptions]
-    
-#     return descriptions
 
 
 @reestr_routers.get("/reestr/description_3/{level_2_id}", response_model=list, tags=['reestr'])
@@ -281,6 +273,8 @@ async def fetch_risk_4_description_by_level_3_id(level_3_id: str, db: Session = 
     
     return descriptions
 
+
+# Need to complete / corrections
 @reestr_routers.delete('/reestr/{level}/{item_id}', tags=["reestr"])
 async def delete_reestr(level: str, item_id:str = None, db: Session = Depends(get_db)):
 
@@ -300,7 +294,6 @@ async def delete_reestr(level: str, item_id:str = None, db: Session = Depends(ge
         item = db.query(RiskFactor4).filter(RiskFactor4.level_4_id == item_id).first()
 
     
-    # Step 5: Check if the item exists and delete it
     if item:
         db.delete(item)
         db.commit()
@@ -311,19 +304,3 @@ async def delete_reestr(level: str, item_id:str = None, db: Session = Depends(ge
 
     # return conn.execute(select(RiskFactor1).where(Users.id == id)).first()
 
-
-# async def delete_reestr(item_id: str, db: Session = Depends(get_db)):
-#     item = None
-#     for model in [RiskFactor1, RiskFactor2, RiskFactor3, RiskFactor4]:
-#         item = db.query(model).filter(model.level_id == item_id).first()
-#         if item:
-#             break
-#     if not item:
-#         raise HTTPException(status_code=404, detail="Item not found")
-    
-#     # Cascade delete or check for child relationships here
-#     # ...
-
-#     db.delete(item)
-#     db.commit()
-#     return {"message": "Item deleted successfully"}
