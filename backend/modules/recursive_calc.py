@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
-from models.reestr import RiskFactor1, RiskFactor2, RiskFactor3, RiskFactor4, RiskCategory, RiskFactor2Event
 from sqlalchemy import select, update, func, Integer, cast, String
+
+from models.reestr import RiskFactor1, RiskFactor2, RiskFactor3, RiskFactor4, RiskCategory, RiskFactor2Event
 from modules.calculations import calculate_residual_loss, calculate_condition
 
 

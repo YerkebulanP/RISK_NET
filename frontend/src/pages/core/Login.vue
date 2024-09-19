@@ -1,17 +1,16 @@
 <template>
-  <v-app id="login" class="secondary">
-    <v-content>
+  <v-app>
+    <v-main>
       <v-container fluid fill-height>
-        <v-layout align-center justify-center>
-          <v-flex xs12 sm8 md4 lg4>
+        <v-row justify="center">
+          <!-- <v-col> -->
             <v-card class="elevation-1 pa-3">
               <v-card-text>
-                <div class="layout column align-center">
-                  <img src="static/ktz_logo.png" width="450" height="120">
+                <div class="d-flex flex-column align-center">
+                  <img src="static/ktz_logo.png" width="450" height="120" alt="Logo">
                   <!-- <h1 class="flex my-4 primary--text">RiskNET</h1> --><br><br><br><br>
                 </div>
-                <v-form>
-
+                <v-form>  
                   <v-text-field
                     append-icon="person"
                     name="email"
@@ -19,7 +18,8 @@
                     type="text"
                     v-model="email"
                     :error="error"
-                    :rules="[rules.required]"/>
+                    :rules="[rules.required]"
+                  />
                   <v-text-field
                     :type="hidePassword ? 'password' : 'text'"
                     :append-icon="hidePassword ? 'visibility_off' : 'visibility'"
@@ -29,28 +29,34 @@
                     :rules="[rules.required]"
                     v-model="password"
                     :error="error"
-                    @click:append="hidePassword = !hidePassword"/>
+                    @click:append="hidePassword = !hidePassword"
+                  />
                 </v-form>
               </v-card-text>
-              <v-card-actions class = "d-flex justify-center">
-                <v-spacer></v-spacer>
+              <v-card-actions class="d-flex justify-center pa-2">
                 <v-btn block color="primary" @click="register" :loading="loading">Регистрация</v-btn>
-                <v-btn block color="primary" @click="submit_login ({id, email, password})" :loading="loading">
-                  {{ id ? "Edit" : "Войти"}}</v-btn>
+              </v-card-actions>
+
+              <v-card-actions class="d-flex justify-center pa-2">
+                <v-btn block color="primary" @click="submit_login({ id, email, password })" :loading="loading">
+                  {{ id ? "Edit" : "Войти" }}
+                </v-btn>
               </v-card-actions>
             </v-card>
-          </v-flex>
-        </v-layout>
+          <!-- </v-col> -->
+        </v-row>
       </v-container>
       <v-snackbar
         v-model="showResult"
         :timeout="2000"
-        top>
+        top
+      >
         {{ result }}
       </v-snackbar>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
+
 
 <script>
 export default {
@@ -109,6 +115,10 @@ export default {
 
       try {
         const response = await this.$axios.post('http://127.0.0.1:8000/login', formData);
+
+        const accessToken = response.data.access_token;
+        localStorage.setItem('access_token', accessToken);
+        console.log('Token saved:', accessToken);
 
         console.log('Login successful:', response.data);
         this.result = 'Login successful';

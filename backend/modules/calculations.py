@@ -29,4 +29,4 @@ Y_values = [100,100,100,100,100,100,5,0,0,5]
 AA_values = [-15630, 0, 0, 0, 0, 4086, -80, 0, 0, -72]  
 
 result = calculate_condition(AA_values, Y_values)
-print(result)
+# print(result)

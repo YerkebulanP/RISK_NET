@@ -53,6 +53,24 @@
                       :error="error"
                       @click:append="hidePassword = !hidePassword"/>
 
+                    <v-text-field
+                      append-icon="person"
+                      name="workplace"
+                      label="Место работы"
+                      type="text"
+                      v-model="workplace"
+                      :error="error"
+                      :rules="[rules.required]"/>   
+
+                    <v-text-field
+                      append-icon="person"
+                      name="department"
+                      label="Департамент"
+                      type="text"
+                      v-model="department"
+                      :error="error"
+                      :rules="[rules.required]"/>    
+
                     <v-select
                         v-model="position"
                         :items="['Главный менеджер', 'Менеджер', 'Директор департамента']"
@@ -60,11 +78,14 @@
                         :rules="[rules.required]"
                      ></v-select>
 
+                     
+
                   </v-form>
                 </v-card-text>
 
                   <v-card-actions class="action-container">
-                    <v-btn class="button-full-width" color="primary" @click="register({id, username, lastname, email, password, position})" :loading="loading">
+                    <v-btn class="button-full-width" color="primary" @click="register({id, username, lastname, email, password, position, workplace, department})" 
+                    :loading="loading">
                       {{ id ? "Edit" : "Регистрация" }}
                     </v-btn>
                   <div class="login-button" @click="login()">
@@ -135,6 +156,22 @@
       set(value){
         this.$store.commit("user/storePosition", value)
       }
+    },
+    userWorkplace:{
+      get(){
+        return this.$store.state.user.workplace
+      },
+      set(value){
+        this.$store.commit("user/storeWorkplace", value)
+      }
+    },
+    userDepartment:{
+      get(){
+        return this.$store.state.user.department
+      },
+      set(value){
+        this.$store.commit("user/storeDepartment", value)
+      }
     }
   },
     data() {
@@ -146,6 +183,8 @@
         email:'',
         password:'',
         position:'',
+        workplace: '',
+        department: '',
         hidePassword: true,
         error: false,
         showResult: false,

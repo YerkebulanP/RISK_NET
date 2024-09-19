@@ -13,7 +13,9 @@ class Users(Base):
     lastname = Column(String(40), unique = False, nullable = False)
     email = Column(String(40), unique = False, nullable = False)
     password = Column(String(256), nullable = False)
-    position = Column(String(100))   
+    position = Column(String(100), nullable = False)
+    department = Column(String(100), nullable = False) 
+    workplace = Column(Integer, nullable = False)  
 
 
 Base.metadata.create_all(engine)

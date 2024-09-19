@@ -36,13 +36,16 @@ setupComponents(Vue);
 
 Vue.config.productionTip = false
 
-
-new Vue({
-  el: '#app',
-  router,
-  components: { App },
-  template: '<App/>',
-  data: {
-    themeColor: '#1D2939',
-  },
+const vuetify = new Vuetify({
+  theme: {
+    primary: "#1D2939"
+  }
 })
+new Vue({
+  // el: '#app',
+  router,
+  // components: { App },
+  template: '<App/>',
+  vuetify,
+  render: h => h(App),
+}).$mount('#app');

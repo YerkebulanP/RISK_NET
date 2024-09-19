@@ -1,20 +1,28 @@
 from typing import Optional
 from fastapi import HTTPException, Path, Query 
+from fastapi import APIRouter, Depends
+from fastapi import Response
+from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
+
 from pydantic import ValidationError
+
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import select, update, func, Integer, cast, String
 from sqlalchemy.sql import text
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-from schemas.schemas import RiskFactor1Create, RiskFactor2Create, RiskFactor3Create, RiskFactor4Create, RiskFactor2EventCreate, RiskFactor2EventBase
+from sqlalchemy.orm import Session, DeclarativeMeta
+
 from config.database import conn, get_db
-from models.reestr import RiskFactor1, RiskFactor2, RiskFactor3, RiskFactor4, RiskCategory, RiskFactor2Event
-from sqlalchemy.orm import DeclarativeMeta
+from schemas.reestr_schemas import RiskFactor1Create, RiskFactor2Create, RiskFactor3Create, RiskFactor4Create, RiskFactor2EventCreate, RiskFactor2EventBase
+from models.reestr import RiskFactor1, RiskFactor2, RiskFactor3, RiskFactor4, RiskCategory, RiskFactor2Event, Divisions
+
 from modules.recursive_calc import update_risk_factor_3_from_4, update_risk_factor_2_from_3, update_risk_factor_1_from_2
 from modules.calculations import calculate_residual_loss
 
+from .users_router import get_current_user  
+
 reestr_routers = APIRouter()
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 @reestr_routers.post("/reestr/risk_factor_1/", response_model=int, tags=['reestr'])
 def create_risk_factor_1(risk_factor_1: RiskFactor1Create, db: Session = Depends(get_db)):
@@ -173,13 +181,15 @@ def create_risk_factor_2_event(level_2_id: str, event_data: RiskFactor2EventCrea
     return db_event
 
 
-@reestr_routers.get('/reestr', response_model=list, tags=["reestr"])
-async def fetch_all_reestr(db: Session = Depends(get_db)):
+@reestr_routers.get('/reestr/structure_divisions_table', response_model=list, tags=["reestr"])
+async def fetch_subsidiary_reestr(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    # Apply filtering based on user's position
     query = (
         select(
             RiskCategory.risk_category_name,
             RiskFactor1.level_1_id,
             RiskFactor1.owner,
+            RiskFactor1.risk_code,
             RiskFactor1.control_sp,
             RiskFactor1.description_1,
             RiskFactor2.description_2,
@@ -197,10 +207,56 @@ async def fetch_all_reestr(db: Session = Depends(get_db)):
         .outerjoin(RiskFactor2, RiskFactor1.level_1_id == RiskFactor2.level_1_id)
         .outerjoin(RiskFactor3, RiskFactor2.level_2_id == RiskFactor3.level_2_id)
         .outerjoin(RiskFactor4, RiskFactor3.level_3_id == RiskFactor4.level_3_id)
-        .outerjoin(RiskFactor2Event, RiskFactor2Event.level_2_id == RiskFactor2.level_2_id)  
+        .outerjoin(RiskFactor2Event, RiskFactor2Event.level_2_id == RiskFactor2.level_2_id)
+        .where(RiskFactor1.division_id == current_user.workplace)  # Фильтр по месту работы
+  
     )
     result = db.execute(query).fetchall()
     return result
+
+
+@reestr_routers.get('/reestr/main_table', response_model=list, tags=["reestr"])
+async def fetch_all_reestr(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    # Retrieve the workplace name based on the workplace_id from the current_user
+    workplace_id = current_user.workplace
+    workplace_name = db.query(Divisions.division_name).filter(Divisions.division_id == workplace_id).scalar()
+    print('mesto raboty:', workplace_name) 
+
+    # Check if the user has permission to access the data
+    if workplace_name != 'Центральный аппарат':
+        return []
+    # Define the query
+    query = (
+        select(
+            RiskCategory.risk_category_name,
+            RiskFactor1.level_1_id,
+            RiskFactor1.owner,
+            RiskFactor1.risk_code,
+            RiskFactor1.control_sp,
+            RiskFactor1.description_1,
+            RiskFactor2.description_2,
+            RiskFactor3.description_3,
+            RiskFactor4.description_4,
+            RiskFactor2.swot,
+            RiskFactor2Event.event_name,
+            RiskFactor2Event.event_effectiveness,
+            RiskFactor2Event.responsible_sp,
+            RiskFactor1.total_prob.label('prob_1'),
+            RiskFactor1.total_effect.label('effect_1'),
+            RiskFactor1.total_loss.label('loss_1')
+        )
+        .join(RiskFactor1, RiskCategory.risk_code == RiskFactor1.risk_code)
+        .outerjoin(RiskFactor2, RiskFactor1.level_1_id == RiskFactor2.level_1_id)
+        .outerjoin(RiskFactor3, RiskFactor2.level_2_id == RiskFactor3.level_2_id)
+        .outerjoin(RiskFactor4, RiskFactor3.level_3_id == RiskFactor4.level_3_id)
+        .outerjoin(RiskFactor2Event, RiskFactor2Event.level_2_id == RiskFactor2.level_2_id)
+    )
+    
+    # Execute the query
+    result = db.execute(query).fetchall()
+
+    return result
+
 
 @reestr_routers.get('/reestr/risk_category_name/', response_model=list, tags=['reestr'])
 async def fetch_risk_categories(db: Session = Depends(get_db)):

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Form
+from fastapi import APIRouter, Depends, HTTPException, Form, status
 from config.database import conn, get_db
 from models.users import Users
-from schemas.schemas import User, UserCreate
+from models.reestr import Divisions
+from schemas.user_schemas import User, UserCreate
 
 from sqlalchemy import select, join, delete
 from sqlalchemy.orm import Session
@@ -41,16 +42,50 @@ def create_access_token(data: dict):
     return encoded_jwt
 
 
+def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"}
+    )
+
+    print("This token is: ", token)
+    print("Secret key is:", SECRET_KEY)
+
+    payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+    email: str = payload.get("email")
+    workplace: int = payload.get("workplace")
+    department: str = payload.get("department")
+
+    if email is None or workplace is None or department is None:
+        print("Email / workplace / department is missing from the token.")
+        raise credentials_exception
+
+
+    user = db.query(Users).filter(Users.email == email).first()
+
+    if user is None:
+        raise  credentials_exception
+    return user
+
+
 # REGISTRATION
 @user_routers.post('/', tags=["users"])
 async def create_user(user: UserCreate, db: Session = Depends(get_db)):
     hashed_password = hash_password(user.password)  # Hash the provided password
+    workplace_id = db.query(Divisions.division_id).filter(Divisions.division_name == user.workplace).first()
+
+    if not workplace_id:
+        raise HTTPException(status_code=400, detail="Workplace not found")
+
     conn.execute(Users.__table__.insert().values(
         username=user.username,
         lastname=user.lastname, 
         email=user.email, 
         password=hashed_password,  # Store the hashed password
-        position=user.position)
+        position=user.position,
+        department = user.department,
+        workplace = workplace_id[0])
     )
     return conn.execute(select(Users)).fetchall()
 
@@ -64,6 +99,7 @@ def authenticate_user(db: Session, email: str, password: str):
         return False
     return user
 
+
 @user_routers.post("/login", tags=["users"])
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = authenticate_user(db, form_data.username, form_data.password)
@@ -73,9 +109,15 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
             detail="Incorrect email or password",
             headers={"WWW-Authenticate": "Bearer"}
         )
-    access_token = create_access_token(data={"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    access_token = create_access_token(
+        data={
+            "email": user.email,
+            "workplace": user.workplace,
+            "department": user.department  # Добавляем workplace в токен
+        }
+    )
 
+    return {"access_token": access_token, "token_type": "bearer"}
 
     
 @user_routers.get('/', tags=["users"])

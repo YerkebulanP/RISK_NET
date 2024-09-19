@@ -1,8 +1,6 @@
 from config.database import conn, engine
 from sqlalchemy import Column, Integer, String, ForeignKey, text, Boolean, Table, Float, case
 from sqlalchemy.orm import declarative_base, relationship
-from sqlalchemy.orm import Session
-from sqlalchemy.ext.hybrid import hybrid_property
 
 Base = declarative_base()
 
@@ -12,10 +10,19 @@ class RiskCategory(Base):
     risk_category_name = Column(String)
     description = Column(String)
 
+class Divisions(Base):
+    __tablename__ = 'structure_divisions'
+    division_id = Column(Integer, primary_key=True)
+    division_name = Column(String)
+    shortened_name = Column(String)
+    
+    risk_factor_1 =  relationship('RiskFactor1', back_populates='division')
+
 class RiskFactor1(Base):
     __tablename__ = 'risk_factor_1'
 
     level_1_id = Column(String, primary_key=True)
+    division_id = Column(Integer, ForeignKey("structure_divisions.division_id"))
 
     description_1 = Column(String)
     owner = Column(String)
@@ -25,6 +32,7 @@ class RiskFactor1(Base):
     total_loss = Column(Float)  
     priority = Column(String, nullable=True)
     
+    division = relationship("Divisions", back_populates="risk_factor_1")
 
     risk_code = Column(String, ForeignKey('risk_category.risk_code'))
 

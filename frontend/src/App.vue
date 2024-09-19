@@ -5,10 +5,10 @@
         <div class="app-container">
           <toolbar @toggleNavigationBar="drawer = !drawer"/>
           <navigation :toggle="drawer"/>
-          <v-content>
+          <v-main>
             <breadcrumbs />
             <router-view/>
-          </v-content>
+          </v-main>
         </div>
       </v-app>
     </template>
