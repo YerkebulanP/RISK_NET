@@ -1,10 +1,10 @@
 # Download Python
 
 ## install python libraries
-pip install fastapi
-pip install uvicorn
-pip install python-jose[cryptography]
-pip install passlib
+* pip install fastapi
+* pip install uvicorn
+* pip install python-jose[cryptography]
+* pip install passlib
 pip install psycopg2
 pip install sqlalchemy
 
