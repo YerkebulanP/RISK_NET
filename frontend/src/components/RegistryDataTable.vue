@@ -3,7 +3,7 @@
     <v-toolbar flat>
       <v-toolbar-title>Реестр</v-toolbar-title>
       
-      <v-btn v-if="isCentralApparatus && tableType === 'main_table'" color="primary" @click="consolidateRisks"> Консолидировать </v-btn>
+      <v-btn style="margin-left: 50px;" v-if="isCentralApparatus && tableType === 'main_table'" color="primary" @click="consolidateRisks"> Консолидировать </v-btn>
 
       <v-spacer></v-spacer>
    
@@ -35,8 +35,7 @@
       </v-card-title>
 
  
-
-      <v-btn @click="openAddDialog">Добавить новый риск</v-btn>
+      <v-btn style="margin-right: 10px;" @click="openAddDialog">Добавить новый риск</v-btn>
       <v-btn @click="openAddEventDialog">Добавить мерпориятия</v-btn>
 
     </v-toolbar>
@@ -134,23 +133,27 @@
 
         <!-- ADD THE NEW RECORD -->
         <v-card-text>
+            
           <v-select
             v-if="showRiskCategoryInput" v-model="editedItem.risk_category_name" :items="riskCategories" label="Выберите категорию риска" required 
             class="mb-5"item-text="risk_category_name" item-value="risk_category_name" @change="handleCategorySelect"
           ></v-select>
-
-          <v-row v-if="!showLevel2Inputs && editedItem.risk_category_name"> 
+        
+        <v-row>
+          <v-col v-if="!showLevel2Inputs && editedItem.risk_category_name"> 
             <div style="text-align: center;">ОПИСАНИЯ РИСК ФАКТОРА УРОВНЯ 1</div>
               <v-text-field v-if="editedItem.risk_category_name" v-model="editedItem.description_1" label="ФАКТОРЫ РИСКА УРОВЕНЬ 1 (описание)" required></v-text-field>
               <v-text-field v-if="editedItem.risk_category_name" v-model="editedItem.owner" label="ВЛАДЕЛЕЦ РИСКА" required></v-text-field>
               <v-text-field v-if="editedItem.risk_category_name" v-model="editedItem.control_sp" label="КОНТРОЛИРУЮЩЕЕ СП" required></v-text-field>
               <v-select v-if="editedItem.risk_category_name" :items="['высокий','средний','низкий', 'Очистить']" v-model="editedItem.priority" label="ПРИОРИТЕТ" required @input="handleSelect"></v-select>
               
-              <v-btn icon @click="saveIntermediateData_1" style="position: absolute; top: 94.5%; left: 75%; transform: translate(-50%, -50%);"><v-icon>mdi-plus</v-icon></v-btn>
+              <v-btn icon @click="saveIntermediateData_1"><v-icon>mdi-plus</v-icon></v-btn>
               <v-btn @click="showLevel2Inputs = true; showRiskCategoryInput = false;" class="ml-auto" >Далее</v-btn>
-          </v-row>
-
-          <v-row v-if="showLevel2Inputs" justify="center">
+          </v-col>
+        </v-row>
+        
+        <v-row>
+          <v-col v-if="showLevel2Inputs" justify="center">
               <div style="text-align: center;">ОПИСАНИЯ РИСК ФАКТОРА УРОВНЯ 2</div>
               <v-select v-if="showLevel2Inputs" v-model="editedItem.level_1_id"  item-text ='description_1' item-value='level_1_id' @change="handleLevel1Select" :items="riskFactor1Description"  label="ВЫБЕРИТЕ ФАКТОР РИСКА УРОВЕНЬ 1"></v-select>
               <v-text-field v-if="showLevel2Inputs" v-model="editedItem.description_2" label="ФАКТОР РИСКА УРОВЕНЬ 2(описание)" required></v-text-field>
@@ -163,13 +166,13 @@
               <v-text-field v-if="showLevel2Inputs" v-model="editedItem.comments_2" label="КОММЕНТАРИЙ"></v-text-field>
 
               <v-btn @click="showLevel2Inputs = false; showRiskCategoryInput = true">Назад</v-btn>
-              <v-btn style="position: absolute; top: 83.5%; left: 72%; transform: translate(-50%, -50%);" icon @click="saveIntermediateData_2"><v-icon>mdi-plus</v-icon></v-btn>
+              <v-btn icon @click="saveIntermediateData_2"><v-icon>mdi-plus</v-icon></v-btn>
               <v-btn @click="showLevel3Inputs = true; showLevel2Inputs = false;  editedItem.risk_category_name = false; showRiskCategoryInput = false" class="ml-auto">Далее</v-btn>
-
-          </v-row>
-
+          </v-col>
+        </v-row>
           
-          <v-row v-if="showLevel3Inputs" justify="center" class="mb-3">
+        <v-row>
+          <v-col v-if="showLevel3Inputs" justify="center" class="mb-3">
               <div style="text-align: center;">ОПИСАНИЯ РИСК ФАКТОРА УРОВНЯ 3</div>
               <v-select v-if="showLevel3Inputs" v-model="editedItem.level_2_id" item-text="description_2" item-value="level_2_id" @change="handleLevel2Select" :items="riskFactor2Description" label="ВЫБЕРИТЕ ФАКТОР РИСКА УРОВЕНЬ 2"></v-select>
               <v-text-field v-if="showLevel3Inputs" v-model="editedItem.description_3" label="ФАКТОР РИСКА УРОВЕНЬ 3(описание)" required></v-text-field>
@@ -181,12 +184,13 @@
               <v-text-field v-if="showLevel3Inputs" v-model="editedItem.comments_3" label="КОММЕНТАРИЙ"></v-text-field>
 
               <v-btn @click="showLevel3Inputs = false; showLevel2Inputs = true">Назад</v-btn>
-              <v-btn icon @click="saveIntermediateData_3" style="position: absolute; top: 83.5%; left: 72%; transform: translate(-50%, -50%);"><v-icon>mdi-plus</v-icon></v-btn>
+              <v-btn icon @click="saveIntermediateData_3"><v-icon>mdi-plus</v-icon></v-btn>
               <v-btn @click="showLevel4Inputs = true; showLevel3Inputs = false; showRiskCategoryInput = false"  class="ml-auto">Далее</v-btn>
+          </v-col>
+        </v-row>
 
-          </v-row>
-
-          <v-row v-if="showLevel4Inputs" justify="center" class="mb-3">
+        <v-row>
+          <v-col v-if="showLevel4Inputs" justify="center" class="mb-3">
               <div style="text-align: center;">ОПИСАНИЯ РИСК ФАКТОРА УРОВНЯ 4</div>
               <v-select v-if="showLevel4Inputs" v-model="editedItem.level_3_id" item-text="description_3" item-value="level_3_id" @change = "handleLevel3Select" :items="riskFactor3Description" label="ВЫБЕРИТЕ ФАКТОР РИСКА УРОВЕНЬ 3"></v-select>
               <v-text-field v-if="showLevel4Inputs" v-model="editedItem.description_4" label="ФАКТОР РИСКА УРОВЕНЬ 4(описание)" required></v-text-field>      
@@ -198,13 +202,15 @@
               <v-text-field v-if="showLevel4Inputs" v-model="editedItem.comments_4" label="КОММЕНТАРИЙ"></v-text-field>
 
               <v-btn @click="showLevel4Inputs = false; showLevel3Inputs = true">Назад</v-btn>
-              <v-btn style="position: absolute; top: 83.5%; left: 72%; transform: translate(-50%, -50%);" icon @click="saveIntermediateData_4"><v-icon>mdi-plus</v-icon></v-btn>
+              <v-btn icon @click="saveIntermediateData_4"><v-icon>mdi-plus</v-icon></v-btn>
               <v-btn @click="saveOrUpdate" class = "ml-auto">Сохранить</v-btn>
-          </v-row>
+          </v-col>
+        </v-row>
+          
         </v-card-text>
 
-        <v-card-actions class="justify-center"></v-card-actions>
-        <v-card-actions class="justify-center"></v-card-actions>
+        <!-- <v-card-actions class="justify-center"></v-card-actions>
+        <v-card-actions class="justify-center"></v-card-actions> -->
 
       </v-card>
     </v-dialog>

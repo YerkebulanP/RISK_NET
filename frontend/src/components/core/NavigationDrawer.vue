@@ -25,12 +25,11 @@
         <v-list-group no-action>
           <v-list-item slot="activator">
             <v-list-item-action>
-              <v-icon>table</v-icon>
+              <v-icon style="padding-left: 20px;">table</v-icon>
             </v-list-item-action>
             <v-list-item-title class="item-title">{{ 'Таблица' }}</v-list-item-title>
           </v-list-item>
 
-          <!-- Sub-items under Таблица -->
           <v-list-item @click="changeRoute('SubsidiaryTable', 1)">
             <v-list-item-title :class="[{'active': selectedIndex === 1}, 'item-title']">{{ 'Таблица по филиалам' }}</v-list-item-title>
           </v-list-item>
@@ -43,24 +42,26 @@
             <v-list-item-title :class="[{'active': selectedIndex === 3}, 'item-title']">{{ 'Консолидированная таблица' }}</v-list-item-title>
           </v-list-item>
         </v-list-group>
-       
-      <v-list-item @click="changeRoute('Chart', 4)">
+
+        
+        <v-list-item style="padding-left: 52px;" @click="changeRoute('Chart', 4)">
           <v-list-item-action>
             <v-icon>bar_chart</v-icon>
           </v-list-item-action>
-          <v-list-item-title :class="[{'active': selectedIndex === 4}, 'item-title' ]">{{ ('Графики') }}</v-list-item-title>
+          <v-list-item-title style="padding-left: 1px;" :class="[{'active': selectedIndex === 4}, 'item-title' ]">{{ ('Графики') }}</v-list-item-title>
         </v-list-item>
+      
+
 
     </v-list-group>
 
-      <v-list-item @click="changeRoute('Riskappetite', 5)">
+      <v-list-item style="padding-left: 32px;" @click="changeRoute('Riskappetite', 5)">
           <v-list-item-action>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>trending-down</title>
               <path d="M16,18L18.29,15.71L13.41,10.83L9.41,14.83L2,7.41L3.41,6L9.41,12L13.41,8L19.71,14.29L22,12V18H16Z" /></svg>
           </v-list-item-action>
           <v-list-item-title :class="[{'active': selectedIndex === 5}, 'item-title' ]"> {{ ('Риск-аппетит') }}</v-list-item-title>
       </v-list-item>
-
 
     <v-list-group>
       <v-list-item slot="activator">
@@ -73,7 +74,7 @@
           <v-list-item-title class="item-title">{{ ('СВК') }}</v-list-item-title>
         </v-list-item>
 
-        <v-list-item @click="changeRoute('RankingMatrix', 6)">
+        <v-list-item style="padding-left: 52px;" @click="changeRoute('RankingMatrix', 6)">
           <v-list-item-action>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><title>matrix</title><path d="M2,2H6V4H4V20H6V22H2V2M20,4H18V2H22V22H18V20H20V4M9,
                5H10V10H11V11H8V10H9V6L8,6.5V5.5L9,5M15,13H16V18H17V19H14V18H15V14L14,14.5V13.5L15,13M9,13C10.1,13 11,14.34 11,16C11,17.66 10.1,19 9,19C7.9,19 7,17.66 7,
@@ -88,14 +89,14 @@
           <v-list-item-action>
      
           </v-list-item-action>
-          <v-list-item-title :class="[{'active': selectedIndex === 7}, 'item-title' ]">{{ ('Блок-схема') }}</v-list-item-title>
+          <v-list-item-title style="padding-left: 36px;"  :class="[{'active': selectedIndex === 7}, 'item-title' ]">{{ ('Блок-схема') }}</v-list-item-title>
         </v-list-item>
 
         <v-list-item @click="changeRoute('RiskMatrix', 8)">
           <v-list-item-action>
      
          </v-list-item-action>
-          <v-list-item-title :class="[{'active': selectedIndex === 8}, 'item-title' ]">{{ ('Матрица рисков и контролей') }}</v-list-item-title>
+          <v-list-item-title style="padding-left: 36px;" :class="[{'active': selectedIndex === 8}, 'item-title' ]">{{ ('Матрица рисков и контролей') }}</v-list-item-title>
         </v-list-item>
     </v-list-group>
     </v-list>
